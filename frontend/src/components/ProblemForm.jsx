@@ -106,7 +106,9 @@ export default function ProblemForm({ onSubmit, isLoading }) {
             <option value="min">Minimize</option>
           </select>
           
-          <span className="font-bold text-xl mx-2">=</span>
+          <span className="font-bold text-xl mx-2">
+            <InlineMath math="z =" />
+          </span>
           
           {objCoeffs.map((coeff, i) => (
             <div key={i} className="flex items-center space-x-2">
@@ -128,7 +130,7 @@ export default function ProblemForm({ onSubmit, isLoading }) {
 
       {/* Hệ ràng buộc */}
       <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
-        <h3 className="font-semibold text-gray-700 mb-4">Hệ ràng buộc (Constraints)</h3>
+        <h3 className="font-semibold text-gray-700 mb-4">Hệ ràng buộc</h3>
         
         <div className="space-y-4">
           {constraints.map((constraint, constIndex) => (
