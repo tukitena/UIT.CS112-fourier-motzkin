@@ -1,5 +1,5 @@
 from fractions import Fraction
-from typing import List, Dict
+from typing import List, Dict, Optional
 from app.schemas import StepLog 
 
 def get_var_name(idx: int) -> str:
@@ -71,7 +71,11 @@ def format_inequality(coeffs: List[Fraction], constant: Fraction) -> str:
     rhs = format_fraction(constant)
     return f"{lhs} \\leq {rhs}"
 
-def format_steps_log(raw_steps: List[Dict]) -> List[StepLog]:
+def format_steps_log(
+    raw_steps: List[Dict],
+    objective_type: Optional[str] = None,
+    z_star: Optional[Fraction] = None
+) -> List[StepLog]:
     """
     Format the raw steps log from optimizer to frontend's schema.
     Auto calculate and format upper bound and lower bound algebraically.
@@ -125,6 +129,28 @@ def format_steps_log(raw_steps: List[Dict]) -> List[StepLog]:
             eliminatedSystemLatex=eliminated_system
         )
         formatted_steps.append(formatted_step)
+
+    # Add a final z-bound step for optimal solutions.
+    if z_star is not None and objective_type in {"max", "min"}:
+        z_bound = format_fraction(z_star)
+        if objective_type == "max":
+            formatted_steps.append(
+                StepLog(
+                    variable="z",
+                    upperBoundsLatex=[f"z \\leq {z_bound}"],
+                    lowerBoundsLatex=[],
+                    eliminatedSystemLatex=[]
+                )
+            )
+        else:
+            formatted_steps.append(
+                StepLog(
+                    variable="z",
+                    upperBoundsLatex=[],
+                    lowerBoundsLatex=[f"z \\geq {z_bound}"],
+                    eliminatedSystemLatex=[]
+                )
+            )
 
     return formatted_steps
 

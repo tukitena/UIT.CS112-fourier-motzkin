@@ -84,5 +84,5 @@ def solve_lp(
         if max_lower_bound is None:
             return None, "unbounded", steps_log
         z_star = max_lower_bound
-    
+
     return z_star, "optimal", steps_log
