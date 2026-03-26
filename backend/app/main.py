@@ -39,11 +39,12 @@ def solve_linear_problem(payload: ProblemInput):
         
         # back substitution
         solution_dict = None
+        back_sub_logs = []
         if status == "optimal":
-            solution_dict = back_substitution(raw_steps_log, z_star)
+            solution_dict, back_sub_logs = back_substitution(raw_steps_log, z_star)
             
         # format log to latex and normalized problem for response
-        latex_steps = format_steps_log(raw_steps_log)
+        latex_steps = format_steps_log(raw_steps_log, payload.objectiveType, z_star)
         normalized_prob = format_normalized_problem(matrix, rhs)
         
         # Format z* for response
@@ -65,6 +66,7 @@ def solve_linear_problem(payload: ProblemInput):
                 objectiveValue=obj_val_str,
                 objectiveValueLatex=obj_val_latex,
                 solution=solution_dict,
+                backSub=back_sub_logs,
                 message=messages.get(status, "Trạng thái không xác định")
             )
         )

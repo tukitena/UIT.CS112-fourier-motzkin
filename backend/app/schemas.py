@@ -12,6 +12,12 @@ class ProblemInput(BaseModel):
     objectiveCoeffs: List[str]
     constraints: List[ConstraintInput]
 
+class BackSubtituionStep(BaseModel):
+    variableIndex: str                           # Variable being processed
+    upperBound: Optional[str] = None
+    lowerBound: Optional[str] = None
+    chosenValue: Optional[str] = None
+
 class StepLog(BaseModel):
     variable: str                           # Variable being processed
     upperBoundsLatex: List[str]             # Upper bounds in LaTeX format
@@ -23,6 +29,7 @@ class SolutionOutput(BaseModel):
     objectiveValue: Optional[str] = None      # String (if infeasible or unbounded), fraction or integer
     objectiveValueLatex: Optional[str] = None # LaTeX representation of the objective value
     solution: Optional[dict[str, str]] = None # dict of sol (ex: {"x1": "1/2", "x2": "0", ...})
+    backSub: List[BackSubtituionStep] = []    # Back substitution steps
     message: str
 
 class ProblemResponse(BaseModel):
