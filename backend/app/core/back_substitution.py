@@ -66,8 +66,8 @@ def back_substitution(
         #Log for back substitution steps
         back_sub_logs.append({
             "variableIndex": str(var_index),
-            "lowerBound": f"max({[str(b) for b in lower_bounds]})" if lower_bounds else "-∞",
-            "upperBound": f"min({[str(b) for b in upper_bounds]})" if upper_bounds else "+∞",
+            "lowerBound": str(max_lower_bound) if max_lower_bound is not None else "-\\infty",
+            "upperBound": str(min_upper_bound) if min_upper_bound is not None else "+\\infty",
             "chosenValue": str(chosen_val)
         })
 
