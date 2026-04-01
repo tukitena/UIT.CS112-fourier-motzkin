@@ -166,8 +166,8 @@ def format_normalized_problem(matrix: List[List[Fraction]], rhs: List[Fraction])
     obj_latex = format_expression(obj_row) + " = 0"
     
     constraints_latex = []
-    # User's constraints start from index 1
-    for i in range(1, len(matrix)):
+    # All constraints
+    for i in range(0, len(matrix)):
         constraints_latex.append(format_inequality(matrix[i], rhs[i]))
         
     return {
