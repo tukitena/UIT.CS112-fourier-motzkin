@@ -1,6 +1,29 @@
 import React from 'react';
-import { BlockMath, InlineMath } from 'react-katex';
+import katex from 'katex';
 import 'katex/dist/katex.min.css';
+
+function renderLatex(math, displayMode) {
+  return katex.renderToString(String(math ?? ''), {
+    displayMode,
+    throwOnError: false,
+  });
+}
+
+function BlockMath({ math }) {
+  return (
+    <div
+      dangerouslySetInnerHTML={{ __html: renderLatex(math, true) }}
+    />
+  );
+}
+
+function InlineMath({ math }) {
+  return (
+    <span
+      dangerouslySetInnerHTML={{ __html: renderLatex(math, false) }}
+    />
+  );
+}
 
 export default function ResultPanel({ result }) {
   if (!result) return null;
