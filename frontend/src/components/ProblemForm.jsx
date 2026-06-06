@@ -3,8 +3,11 @@ import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 
 export default function ProblemForm({ onSubmit, isLoading }) {
+  const MIN_VARIABLES = 1;
+  const MAX_VARIABLES = 4;
+
   // Backend giới hạn numVariables từ 1 đến 4
-  const [numVars, setNumVars] = useState(3); 
+  const [numVars, setNumVars] = useState(3);
   const [objType, setObjType] = useState('max');
   
   // Khởi tạo mảng rỗng, nếu người dùng không nhập thì ngầm hiểu là 0
@@ -13,18 +16,38 @@ export default function ProblemForm({ onSubmit, isLoading }) {
     { coeffs: Array(3).fill(''), operator: '>=', rhs: '' }
   ]);
 
-  // Cập nhật số lượng biến (tự động resize mảng)
-  const handleNumVarsChange = (e) => {
-    let newNum = parseInt(e.target.value) || 1;
-    if (newNum < 1) newNum = 1;
-    if (newNum > 4) newNum = 4; // Giới hạn tối đa 4 biến
-    
+  const clampNumVars = (value, fallback = MIN_VARIABLES) => {
+    const parsed = parseInt(value, 10);
+    if (Number.isNaN(parsed)) return fallback;
+    if (parsed < MIN_VARIABLES) return MIN_VARIABLES;
+    if (parsed > MAX_VARIABLES) return MAX_VARIABLES;
+    return parsed;
+  };
+
+  const resizeProblem = (newNum) => {
     setNumVars(newNum);
     setObjCoeffs(prev => Array.from({ length: newNum }, (_, i) => prev[i] || ''));
     setConstraints(prev => prev.map(c => ({
       ...c,
       coeffs: Array.from({ length: newNum }, (_, i) => c.coeffs[i] || '')
     })));
+  };
+
+  // Cho phép xóa ô để nhập tay, nhưng vẫn cắt về khoảng 1..4 khi có số.
+  const handleNumVarsChange = (e) => {
+    const value = e.target.value;
+    if (value === '') {
+      setNumVars('');
+      return;
+    }
+
+    resizeProblem(clampNumVars(value));
+  };
+
+  const handleNumVarsBlur = () => {
+    if (numVars === '') {
+      resizeProblem(MIN_VARIABLES);
+    }
   };
 
   const handleObjCoeffChange = (index, value) => {
@@ -46,7 +69,7 @@ export default function ProblemForm({ onSubmit, isLoading }) {
   const addConstraint = () => {
     setConstraints([
       ...constraints,
-      { coeffs: Array(numVars).fill(''), operator: '>=', rhs: '' }
+      { coeffs: Array(objCoeffs.length).fill(''), operator: '>=', rhs: '' }
     ]);
   };
 
@@ -57,13 +80,24 @@ export default function ProblemForm({ onSubmit, isLoading }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    const normalizedNumVars = clampNumVars(numVars, MIN_VARIABLES);
+    if (normalizedNumVars !== numVars) {
+      resizeProblem(normalizedNumVars);
+    }
+
     // Định dạng lại dữ liệu: thay thế chuỗi rỗng bằng '0' trước khi gửi
     const payload = {
       objectiveType: objType,
-      numVariables: numVars,
-      objectiveCoeffs: objCoeffs.map(c => c.trim() === '' ? '0' : c),
+      numVariables: normalizedNumVars,
+      objectiveCoeffs: Array.from({ length: normalizedNumVars }, (_, i) => {
+        const coeff = objCoeffs[i] || '';
+        return coeff.trim() === '' ? '0' : coeff;
+      }),
       constraints: constraints.map(c => ({
-        coeffs: c.coeffs.map(coeff => coeff.trim() === '' ? '0' : coeff),
+        coeffs: Array.from({ length: normalizedNumVars }, (_, i) => {
+          const coeff = c.coeffs[i] || '';
+          return coeff.trim() === '' ? '0' : coeff;
+        }),
         operator: c.operator,
         rhs: c.rhs.trim() === '' ? '0' : c.rhs
       }))
@@ -85,7 +119,9 @@ export default function ProblemForm({ onSubmit, isLoading }) {
             min="1" max="4" 
             value={numVars}
             onChange={handleNumVarsChange}
-            className="w-16 border border-gray-300 p-2 rounded-md text-center focus:ring-2 focus:ring-blue-500"
+            onBlur={handleNumVarsBlur}
+            placeholder="1"
+            className="w-16 border border-gray-300 p-2 rounded-md text-center focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
           />
         </div>
       </div>
@@ -122,7 +158,7 @@ export default function ProblemForm({ onSubmit, isLoading }) {
               <span className="text-lg">
                 <InlineMath math={`x_{${i + 1}}`} />
               </span>
-              {i < numVars - 1 && <span className="font-bold text-gray-500 mx-1">+</span>}
+              {i < objCoeffs.length - 1 && <span className="font-bold text-gray-500 mx-1">+</span>}
             </div>
           ))}
         </div>
@@ -149,7 +185,7 @@ export default function ProblemForm({ onSubmit, isLoading }) {
                   <span className="text-lg">
                     <InlineMath math={`x_{${coeffIndex + 1}}`} />
                   </span>
-                  {coeffIndex < numVars - 1 && <span className="font-bold text-gray-500 mx-1">+</span>}
+                  {coeffIndex < objCoeffs.length - 1 && <span className="font-bold text-gray-500 mx-1">+</span>}
                 </div>
               ))}
               
