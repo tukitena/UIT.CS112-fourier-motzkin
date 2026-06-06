@@ -6,7 +6,7 @@ def standardize_problem(problem: ProblemInput):
     """
     Standardize:
     1. add z variable to matrix (index 0)
-    2. convert objective function to two inequalities >= 0 or <= 0 (depends on objective type)
+    2. convert objective function to one <= inequality (depends on objective type)
     3. convert all constraints to <=
     """
     matrix = []
