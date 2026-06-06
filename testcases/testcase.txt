@@ -1,0 +1,244 @@
+BỘ TESTCASE DẠNG THÔ - FOURIER-MOTZKIN SOLVER
+
+Ghi chú:
+Các testcase chi tiết, bao gồm cả testcase hợp lệ và testcase không hợp lệ, có thể xem trong file `api_testcases.json`.
+
+File này chỉ mô tả các testcase hợp lệ ở dạng thô để người dùng có thể nhập tay và test thử trên giao diện frontend.
+Các testcase không hợp lệ được mô tả riêng trong file JSON. Một số lỗi đã được frontend giới hạn bằng giao diện nhập liệu, ví dụ số biến chỉ từ 1 đến 4, loại bài toán chỉ là `max/min`, operator chỉ là `<=/>=`, và số lượng hệ số được tự động khớp với số biến. Các lỗi về định dạng hệ số/phân số không hợp lệ vẫn được backend kiểm tra và trả thông báo lỗi.
+
+Mô tả chung:
+Mỗi testcase được viết theo cấu trúc:
+
+<ID testcase>
+<Mô tả ngắn về mục tiêu testcase>
+INPUT
+<Loại bài toán: max hoặc min>
+<Số biến của bài toán>
+<Các hệ số của hàm mục tiêu, cách nhau bởi dấu cách>
+<Danh sách ràng buộc, mỗi ràng buộc một dòng>
+EXPECTED OUTPUT
+<Trạng thái kết quả: optimal, infeasible hoặc unbounded>
+<Giá trị hàm mục tiêu tối ưu; ghi null nếu không có>
+<Giá trị các biến tại nghiệm tối ưu; ghi null nếu không có>
+
+Quy ước dòng ràng buộc:
+<hệ số các biến> <operator> <right-hand side>
+
+Ví dụ với 2 biến:
+1 1 <= 4
+nghĩa là: x1 + x2 <= 4
+
+Trong code hiện tại, các trạng thái kết quả có thể trả về gồm:
+- optimal: tìm được nghiệm tối ưu.
+- infeasible: bài toán không khả thi/hệ vô nghiệm.
+- unbounded: bài toán không bị chặn.
+
+============================================================
+
+TC01
+Max 2 biến có nghiệm tối ưu cơ bản.
+INPUT
+max
+2
+3 2
+1 1 <= 4
+1 0 >= 0
+0 1 >= 0
+EXPECTED OUTPUT
+optimal
+12
+x1 = 4, x2 = 0
+
+============================================================
+
+TC02
+Min 2 biến có nghiệm tối ưu cơ bản.
+INPUT
+min
+2
+1 1
+1 1 >= 5
+1 0 >= 0
+0 1 >= 0
+EXPECTED OUTPUT
+optimal
+5
+x1 = 0, x2 = 5
+
+============================================================
+
+TC03
+Hệ số phân số.
+INPUT
+max
+2
+1/2 1/3
+1 1 <= 3
+1 0 <= 2
+0 1 >= 0
+1 0 >= 0
+EXPECTED OUTPUT
+optimal
+4/3
+x1 = 2, x2 = 1
+
+============================================================
+
+TC04
+Hệ số âm trong hàm mục tiêu.
+INPUT
+max
+2
+-1 2
+1 1 <= 3
+1 0 >= 0
+0 1 >= 0
+EXPECTED OUTPUT
+optimal
+6
+x1 = 0, x2 = 3
+
+============================================================
+
+TC05
+Hệ vô nghiệm do mâu thuẫn cận trên và cận dưới.
+INPUT
+max
+1
+1
+1 >= 2
+1 <= 1
+EXPECTED OUTPUT
+infeasible
+null
+null
+
+============================================================
+
+TC06
+Max không bị chặn trên.
+INPUT
+max
+1
+1
+1 >= 0
+EXPECTED OUTPUT
+unbounded
+null
+null
+
+============================================================
+
+TC07
+Min không bị chặn dưới.
+INPUT
+min
+1
+1
+1 <= 10
+EXPECTED OUTPUT
+unbounded
+null
+null
+
+============================================================
+
+TC08
+Ràng buộc dạng bằng được mô phỏng bằng hai bất đẳng thức.
+INPUT
+max
+2
+1 1
+1 0 >= 1
+1 0 <= 1
+0 1 >= 2
+0 1 <= 2
+EXPECTED OUTPUT
+optimal
+3
+x1 = 1, x2 = 2
+
+============================================================
+
+TC09
+Hàm mục tiêu có tất cả hệ số bằng 0.
+INPUT
+max
+2
+0 0
+1 0 >= 0
+0 1 >= 0
+1 1 <= 5
+EXPECTED OUTPUT
+optimal
+0
+x1 = 0, x2 = 0
+
+============================================================
+
+TC10
+Ràng buộc dư thừa.
+INPUT
+max
+2
+1 1
+1 1 <= 4
+2 2 <= 10
+1 0 >= 0
+0 1 >= 0
+EXPECTED OUTPUT
+optimal
+4
+x1 = 0, x2 = 4
+
+============================================================
+
+TC11
+Số biến tối đa bằng 4.
+INPUT
+max
+4
+1 2 3 4
+1 1 1 1 <= 10
+1 0 0 0 >= 0
+0 1 0 0 >= 0
+0 0 1 0 >= 0
+0 0 0 1 >= 0
+EXPECTED OUTPUT
+optimal
+40
+x1 = 0, x2 = 0, x3 = 0, x4 = 10
+
+============================================================
+
+TC12
+Min với hệ số âm.
+INPUT
+min
+2
+-1 1
+1 0 >= 0
+0 1 >= 0
+1 1 <= 2
+EXPECTED OUTPUT
+optimal
+-2
+x1 = 2, x2 = 0
+
+============================================================
+
+TC13
+Kết hợp cả hai operator <= và >= trong cùng bài toán.
+INPUT
+max
+2
+2 1
+1 1 >= 2
+1 1 <= 5
+1 0 >= 0
+0 1 >= 0
+1 0 <= 4
+EXPECTED OUTPUT
+optimal
+9
+x1 = 4, x2 = 1
