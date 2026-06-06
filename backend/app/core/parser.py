@@ -10,7 +10,7 @@ def parse_fraction(val_str: str) -> Fraction:
         raise ValueError("Input string is empty.")
     try:
         return Fraction(val_str)
-    except ValueError:
+    except (ValueError, ZeroDivisionError):
         raise ValueError(f"Invalid input: '{val_str}' is not a valid fraction or integer.")
         
 def parse_row(row_str_list: list[str]) -> list[Fraction]:

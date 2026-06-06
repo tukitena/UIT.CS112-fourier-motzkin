@@ -1,0 +1,382 @@
+{
+  "validCases": [
+    {
+      "id": "TC01",
+      "name": "Max 2 bien co nghiem toi uu co ban",
+      "purpose": "Kiem tra bai toan max, 2 bien, rang buoc <= va dieu kien khong am.",
+      "request": {
+        "objectiveType": "max",
+        "numVariables": 2,
+        "objectiveCoeffs": ["3", "2"],
+        "constraints": [
+          { "coeffs": ["1", "1"], "operator": "<=", "rhs": "4" },
+          { "coeffs": ["1", "0"], "operator": ">=", "rhs": "0" },
+          { "coeffs": ["0", "1"], "operator": ">=", "rhs": "0" }
+        ]
+      },
+      "expected": {
+        "httpStatus": 200,
+        "solutionStatus": "optimal",
+        "objectiveValue": "12",
+        "solution": { "x1": "4", "x2": "0" }
+      }
+    },
+    {
+      "id": "TC02",
+      "name": "Min 2 bien co nghiem toi uu co ban",
+      "purpose": "Kiem tra bai toan min va rang buoc >=.",
+      "request": {
+        "objectiveType": "min",
+        "numVariables": 2,
+        "objectiveCoeffs": ["1", "1"],
+        "constraints": [
+          { "coeffs": ["1", "1"], "operator": ">=", "rhs": "5" },
+          { "coeffs": ["1", "0"], "operator": ">=", "rhs": "0" },
+          { "coeffs": ["0", "1"], "operator": ">=", "rhs": "0" }
+        ]
+      },
+      "expected": {
+        "httpStatus": 200,
+        "solutionStatus": "optimal",
+        "objectiveValue": "5",
+        "solution": { "x1": "0", "x2": "5" }
+      }
+    },
+    {
+      "id": "TC03",
+      "name": "He so phan so",
+      "purpose": "Kiem tra parser va tinh toan chinh xac voi Fraction.",
+      "request": {
+        "objectiveType": "max",
+        "numVariables": 2,
+        "objectiveCoeffs": ["1/2", "1/3"],
+        "constraints": [
+          { "coeffs": ["1", "1"], "operator": "<=", "rhs": "3" },
+          { "coeffs": ["1", "0"], "operator": "<=", "rhs": "2" },
+          { "coeffs": ["0", "1"], "operator": ">=", "rhs": "0" },
+          { "coeffs": ["1", "0"], "operator": ">=", "rhs": "0" }
+        ]
+      },
+      "expected": {
+        "httpStatus": 200,
+        "solutionStatus": "optimal",
+        "objectiveValue": "4/3",
+        "solution": { "x1": "2", "x2": "1" }
+      }
+    },
+    {
+      "id": "TC04",
+      "name": "He so am trong ham muc tieu",
+      "purpose": "Kiem tra xu ly he so am va nghiem toi uu nam tren bien.",
+      "request": {
+        "objectiveType": "max",
+        "numVariables": 2,
+        "objectiveCoeffs": ["-1", "2"],
+        "constraints": [
+          { "coeffs": ["1", "1"], "operator": "<=", "rhs": "3" },
+          { "coeffs": ["1", "0"], "operator": ">=", "rhs": "0" },
+          { "coeffs": ["0", "1"], "operator": ">=", "rhs": "0" }
+        ]
+      },
+      "expected": {
+        "httpStatus": 200,
+        "solutionStatus": "optimal",
+        "objectiveValue": "6",
+        "solution": { "x1": "0", "x2": "3" }
+      }
+    },
+    {
+      "id": "TC05",
+      "name": "He vo nghiem do can tren nho hon can duoi",
+      "purpose": "Kiem tra trang thai infeasible.",
+      "request": {
+        "objectiveType": "max",
+        "numVariables": 1,
+        "objectiveCoeffs": ["1"],
+        "constraints": [
+          { "coeffs": ["1"], "operator": ">=", "rhs": "2" },
+          { "coeffs": ["1"], "operator": "<=", "rhs": "1" }
+        ]
+      },
+      "expected": {
+        "httpStatus": 200,
+        "solutionStatus": "infeasible",
+        "objectiveValue": null,
+        "solution": null
+      }
+    },
+    {
+      "id": "TC06",
+      "name": "Max khong bi chan",
+      "purpose": "Kiem tra phat hien unbounded cho bai toan max.",
+      "request": {
+        "objectiveType": "max",
+        "numVariables": 1,
+        "objectiveCoeffs": ["1"],
+        "constraints": [
+          { "coeffs": ["1"], "operator": ">=", "rhs": "0" }
+        ]
+      },
+      "expected": {
+        "httpStatus": 200,
+        "solutionStatus": "unbounded",
+        "objectiveValue": null,
+        "solution": null
+      }
+    },
+    {
+      "id": "TC07",
+      "name": "Min khong bi chan",
+      "purpose": "Kiem tra phat hien unbounded cho bai toan min.",
+      "request": {
+        "objectiveType": "min",
+        "numVariables": 1,
+        "objectiveCoeffs": ["1"],
+        "constraints": [
+          { "coeffs": ["1"], "operator": "<=", "rhs": "10" }
+        ]
+      },
+      "expected": {
+        "httpStatus": 200,
+        "solutionStatus": "unbounded",
+        "objectiveValue": null,
+        "solution": null
+      }
+    },
+    {
+      "id": "TC08",
+      "name": "Rang buoc dang dang thuc bang cap bat dang thuc",
+      "purpose": "Mo phong x1 = 1 va x2 = 2 bang cap >=, <=.",
+      "request": {
+        "objectiveType": "max",
+        "numVariables": 2,
+        "objectiveCoeffs": ["1", "1"],
+        "constraints": [
+          { "coeffs": ["1", "0"], "operator": ">=", "rhs": "1" },
+          { "coeffs": ["1", "0"], "operator": "<=", "rhs": "1" },
+          { "coeffs": ["0", "1"], "operator": ">=", "rhs": "2" },
+          { "coeffs": ["0", "1"], "operator": "<=", "rhs": "2" }
+        ]
+      },
+      "expected": {
+        "httpStatus": 200,
+        "solutionStatus": "optimal",
+        "objectiveValue": "3",
+        "solution": { "x1": "1", "x2": "2" }
+      }
+    },
+    {
+      "id": "TC09",
+      "name": "Ham muc tieu bang 0",
+      "purpose": "Kiem tra he so 0 va truong hop moi diem kha thi deu toi uu.",
+      "request": {
+        "objectiveType": "max",
+        "numVariables": 2,
+        "objectiveCoeffs": ["0", "0"],
+        "constraints": [
+          { "coeffs": ["1", "0"], "operator": ">=", "rhs": "0" },
+          { "coeffs": ["0", "1"], "operator": ">=", "rhs": "0" },
+          { "coeffs": ["1", "1"], "operator": "<=", "rhs": "5" }
+        ]
+      },
+      "expected": {
+        "httpStatus": 200,
+        "solutionStatus": "optimal",
+        "objectiveValue": "0",
+        "solution": { "x1": "0", "x2": "0" }
+      }
+    },
+    {
+      "id": "TC10",
+      "name": "Rang buoc du thua",
+      "purpose": "Kiem tra rang buoc redundant khong lam sai ket qua.",
+      "request": {
+        "objectiveType": "max",
+        "numVariables": 2,
+        "objectiveCoeffs": ["1", "1"],
+        "constraints": [
+          { "coeffs": ["1", "1"], "operator": "<=", "rhs": "4" },
+          { "coeffs": ["2", "2"], "operator": "<=", "rhs": "10" },
+          { "coeffs": ["1", "0"], "operator": ">=", "rhs": "0" },
+          { "coeffs": ["0", "1"], "operator": ">=", "rhs": "0" }
+        ]
+      },
+      "expected": {
+        "httpStatus": 200,
+        "solutionStatus": "optimal",
+        "objectiveValue": "4",
+        "solution": { "x1": "0", "x2": "4" }
+      }
+    },
+    {
+      "id": "TC11",
+      "name": "So bien toi da bang 4",
+      "purpose": "Kiem tra constraint numVariables <= 4 va khong gian 4 bien.",
+      "request": {
+        "objectiveType": "max",
+        "numVariables": 4,
+        "objectiveCoeffs": ["1", "2", "3", "4"],
+        "constraints": [
+          { "coeffs": ["1", "1", "1", "1"], "operator": "<=", "rhs": "10" },
+          { "coeffs": ["1", "0", "0", "0"], "operator": ">=", "rhs": "0" },
+          { "coeffs": ["0", "1", "0", "0"], "operator": ">=", "rhs": "0" },
+          { "coeffs": ["0", "0", "1", "0"], "operator": ">=", "rhs": "0" },
+          { "coeffs": ["0", "0", "0", "1"], "operator": ">=", "rhs": "0" }
+        ]
+      },
+      "expected": {
+        "httpStatus": 200,
+        "solutionStatus": "optimal",
+        "objectiveValue": "40",
+        "solution": { "x1": "0", "x2": "0", "x3": "0", "x4": "10" }
+      }
+    },
+    {
+      "id": "TC12",
+      "name": "Min voi he so am",
+      "purpose": "Kiem tra bai toan min co he so am va mien nghiem bi chan.",
+      "request": {
+        "objectiveType": "min",
+        "numVariables": 2,
+        "objectiveCoeffs": ["-1", "1"],
+        "constraints": [
+          { "coeffs": ["1", "0"], "operator": ">=", "rhs": "0" },
+          { "coeffs": ["0", "1"], "operator": ">=", "rhs": "0" },
+          { "coeffs": ["1", "1"], "operator": "<=", "rhs": "2" }
+        ]
+      },
+      "expected": {
+        "httpStatus": 200,
+        "solutionStatus": "optimal",
+        "objectiveValue": "-2",
+        "solution": { "x1": "2", "x2": "0" }
+      }
+    },
+    {
+      "id": "TC13",
+      "name": "Ket hop <= va >=",
+      "purpose": "Kiem tra standardizer khi co nhieu loai toan tu trong cung mot bai.",
+      "request": {
+        "objectiveType": "max",
+        "numVariables": 2,
+        "objectiveCoeffs": ["2", "1"],
+        "constraints": [
+          { "coeffs": ["1", "1"], "operator": ">=", "rhs": "2" },
+          { "coeffs": ["1", "1"], "operator": "<=", "rhs": "5" },
+          { "coeffs": ["1", "0"], "operator": ">=", "rhs": "0" },
+          { "coeffs": ["0", "1"], "operator": ">=", "rhs": "0" },
+          { "coeffs": ["1", "0"], "operator": "<=", "rhs": "4" }
+        ]
+      },
+      "expected": {
+        "httpStatus": 200,
+        "solutionStatus": "optimal",
+        "objectiveValue": "9",
+        "solution": { "x1": "4", "x2": "1" }
+      }
+    }
+  ],
+  "invalidCases": [
+    {
+      "id": "TC14",
+      "name": "numVariables bang 0",
+      "purpose": "Kiem tra validation Field(gt=0).",
+      "request": {
+        "objectiveType": "max",
+        "numVariables": 0,
+        "objectiveCoeffs": ["1"],
+        "constraints": []
+      },
+      "expected": { "httpStatus": 422 }
+    },
+    {
+      "id": "TC15",
+      "name": "numVariables lon hon 4",
+      "purpose": "Kiem tra validation Field(le=4).",
+      "request": {
+        "objectiveType": "max",
+        "numVariables": 5,
+        "objectiveCoeffs": ["1", "1", "1", "1", "1"],
+        "constraints": []
+      },
+      "expected": { "httpStatus": 422 }
+    },
+    {
+      "id": "TC16",
+      "name": "Sai objectiveType",
+      "purpose": "Chi chap nhan max hoac min.",
+      "request": {
+        "objectiveType": "maximize",
+        "numVariables": 1,
+        "objectiveCoeffs": ["1"],
+        "constraints": []
+      },
+      "expected": { "httpStatus": 422 }
+    },
+    {
+      "id": "TC17",
+      "name": "Sai operator",
+      "purpose": "Chi chap nhan <= hoac >=.",
+      "request": {
+        "objectiveType": "max",
+        "numVariables": 1,
+        "objectiveCoeffs": ["1"],
+        "constraints": [
+          { "coeffs": ["1"], "operator": "=", "rhs": "1" }
+        ]
+      },
+      "expected": { "httpStatus": 422 }
+    },
+    {
+      "id": "TC18",
+      "name": "Sai so luong he so ham muc tieu",
+      "purpose": "Kiem tra validation custom trong standardizer.",
+      "request": {
+        "objectiveType": "max",
+        "numVariables": 2,
+        "objectiveCoeffs": ["1"],
+        "constraints": [
+          { "coeffs": ["1", "0"], "operator": "<=", "rhs": "1" }
+        ]
+      },
+      "expected": {
+        "httpStatus": 400,
+        "detail": "Number of coefficients in objective function does not match numVariables"
+      }
+    },
+    {
+      "id": "TC19",
+      "name": "Sai so luong he so rang buoc",
+      "purpose": "Kiem tra validation custom voi constraint.coeffs.",
+      "request": {
+        "objectiveType": "max",
+        "numVariables": 2,
+        "objectiveCoeffs": ["1", "1"],
+        "constraints": [
+          { "coeffs": ["1"], "operator": "<=", "rhs": "1" }
+        ]
+      },
+      "expected": {
+        "httpStatus": 400,
+        "detail": "Number of coefficients in constraint does not match numVariables"
+      }
+    },
+    {
+      "id": "TC20",
+      "name": "Phan so khong hop le",
+      "purpose": "Kiem tra parser Fraction voi input sai dinh dang.",
+      "request": {
+        "objectiveType": "max",
+        "numVariables": 1,
+        "objectiveCoeffs": ["1/0"],
+        "constraints": [
+          { "coeffs": ["1"], "operator": "<=", "rhs": "1" }
+        ]
+      },
+      "expected": {
+        "httpStatus": 400,
+        "detailContains": "not a valid fraction or integer"
+      }
+    }
+  ]
+}
